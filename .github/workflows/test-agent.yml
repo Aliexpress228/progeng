@@ -1,0 +1,13 @@
+﻿name: Test Self-Hosted Runner
+on:
+  push:
+  workflow_dispatch: # Позволяет запускать вручную кнопкой
+jobs:
+  build-on-local-agent:
+    # Это ключевая строка: мы указываем, что задача должна идти на нашем ПК
+    runs-on: self-hosted
+    steps:
+      - name: Вывод приветствия
+        run: echo "Hello from MIREA local agent!"
+      - name: Показать информацию об ОС (доказываем, что это Windows)
+        run: systeminfo
