@@ -1,13 +1,35 @@
-﻿name: Test Self-Hosted Runner
+﻿name: Python CI Pipeline
+
 on:
   push:
-  workflow_dispatch: # Позволяет запускать вручную кнопкой
+    branches: [ "main" ] # Аналог галочки "Enable continuous integration"
+  workflow_dispatch:     # Аналог кнопки "Save & Queue"
+
 jobs:
-  build-on-local-agent:
-    # Это ключевая строка: мы указываем, что задача должна идти на нашем ПК
-    runs-on: self-hosted
+  build-and-test:
+    # Используем ваш локальный раннер (настроен в ЛБ 4.0)
+    runs-on: self-hosted 
+    
     steps:
-      - name: Вывод приветствия
-        run: echo "Hello from MIREA local agent!"
-      - name: Показать информацию об ОС (доказываем, что это Windows)
-        run: systeminfo
+      # 1. Get sources (Получение кода из репозитория)
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      # 2. Use NuGet / Подготовка окружения
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10' # Укажите вашу версию Python (например, 3.9, 3.11)
+          
+      # 3. NuGet restore (Установка зависимостей)
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+        
+      # 4. Build solution (Проверка компиляции/синтаксиса)
+      - name: Compile check
+        run: python -m compileall app.py
+        
+      # 5. Test Assemblies (Запуск тестов)
+      - name: Run tests
+        run: pytest test_app.py -v
+        
